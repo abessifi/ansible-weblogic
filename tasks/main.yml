@@ -1,0 +1,16 @@
+---
+
+- include: validate.yml
+
+- include: prepare.yml
+  become: yes
+  when: weblogic_force_installation or (not weblogic_already_installed)
+
+- include: "install.yml"
+  become: yes
+  become_user: "{{ weblogic_user }}"
+  when: weblogic_force_installation or (not weblogic_already_installed)
+
+- include: "fix-wlst-securerandom.yml"
+  become: yes
+  become_user: "{{ weblogic_user }}"

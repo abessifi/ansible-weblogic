@@ -1,0 +1,27 @@
+---
+
+- debug:
+    msg: "Force installation option is activated"
+  when: weblogic_force_installation
+
+- name: Check if oracle weblogic version is supported
+  fail:
+    msg: "Release '{{ weblogic_version }}' is not valide. Supported versions are ['11g','12c'] !"
+  when: weblogic_version not in weblogic_supported_versions
+
+- fail:
+    msg: "WebLogic download url is not defined !"
+  when: weblogic_jar_url|trim == ''
+
+- name: Check if oracle weblogic is already installed
+  stat:
+    path: "{{ weblogic_home_dir }}"
+  register: wls_home
+
+- debug:
+    msg: "Oracle WebLogic is already installed in {{ weblogic_home_dir }}"
+  when: wls_home.stat.exists
+
+- set_fact:
+    weblogic_already_installed: true
+  when: wls_home.stat.exists

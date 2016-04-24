@@ -1,0 +1,7 @@
+---
+
+weblogic_user: oracle
+weblogic_group: oinstall
+
+weblogic_supported_versions: ['11g', '12c']
+weblogic_already_installed: false

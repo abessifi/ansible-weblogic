@@ -1,0 +1,23 @@
+---
+
+galaxy_info:
+  author: Ahmed Bessifi
+  description: "Install and configure Oracle Weblogic Server"
+  license: "MIT"
+  min_ansible_version: 1.9
+  platforms:
+    - name: EL
+      versions:
+        - 7
+  galaxy_tags:
+    - middleware
+    - oracle
+    - web
+
+dependencies:
+  - role: abessifi.java
+    java_version: 8
+    java_jdk_type: 'oracle'
+    oracle_jdk_rpm_package: 'jdk-8u77-linux-x64.rpm'
+    oracle_jdk_rpm_url: 'http://download.oracle.com/otn-pub/java/jdk/8u77-b03/jdk-8u77-linux-x64.rpm'
+    java_set_as_default: true

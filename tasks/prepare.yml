@@ -1,0 +1,62 @@
+---
+
+#
+# Prepare the operating system to the installation
+#
+
+- name: Create weblogic group
+  group:
+    name: "{{ weblogic_group }}"
+    state: present
+
+- name: Create weblogic user
+  user:
+    name: "{{ weblogic_user }}"
+    group: "{{ weblogic_group }}"
+    home: "{{ weblogic_home_dir }}"
+    createhome: no
+    shell: '/bin/bash'
+    state: present
+
+- name: Create Oracle Inventory directory
+  file:
+    path: "{{ oracle_inventory_path }}"
+    state: directory
+    owner: "{{ weblogic_user }}"
+    group: "{{ weblogic_group }}"
+
+- name: Prepare oracle inventory parameters
+  template:
+    src: oraInst.loc.j2
+    dest: "/etc/oraInst.loc"
+
+- name: Create download directory
+  file:
+    path: "{{ weblogic_download_dir }}"
+    state: directory
+
+- set_fact:
+    weblogic_jar_file: "{{ weblogic_jar_url|basename }}"
+
+- name: Check if the installation Jar file exists already
+  stat:
+    path: "{{ weblogic_download_dir }}/{{ weblogic_jar_file }}"
+  register: install_jar
+
+- name: Download the installation Jar file
+  uri:
+    url: "{{ weblogic_jar_url }}"
+    dest: "{{ weblogic_download_dir }}"
+  when: not install_jar.stat.exists
+
+- name: Set installation Jar file permissions
+  file:
+    path: "{{ weblogic_download_dir }}/{{ weblogic_jar_file }}"
+    owner: "{{ weblogic_user }}"
+    group: "{{ weblogic_group }}"
+
+- name: Remove existing oracle home directory
+  file:
+    path: "{{ oracle_home_dir }}"
+    state: absent
+  when: weblogic_force_installation

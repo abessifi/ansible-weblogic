@@ -1,0 +1,5 @@
+---
+
+- hosts: ansible-vm
+  roles:
+    - ansible-weblogic
