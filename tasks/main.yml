@@ -4,7 +4,9 @@
 
 - include: prepare.yml
   become: yes
-  when: weblogic_force_installation or (not weblogic_already_installed)
+#  when: weblogic_force_installation or (not weblogic_already_installed)
+
+- fail: msg="This is a breakpoint !"
 
 - include: "install.yml"
   become: yes

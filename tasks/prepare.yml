@@ -4,6 +4,29 @@
 # Prepare the operating system to the installation
 #
 
+- name: RedHat | Install required packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: rh.packages_depends
+  when: ansible_os_family == 'RedHat'
+
+- name: RedHat | Disabling SELinux
+  selinux:
+    state: disabled
+  when: ansible_os_family == 'RedHat'
+
+- name: RedHat | Disable firewall deamon (firewalld)
+  service: name=firewalld state=stopped enabled=no
+  when: ansible_os_family == 'RedHat'
+
+- name: Change kernel parameters
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  with_dict: kernel_params
+
 - name: Create weblogic group
   group:
     name: "{{ weblogic_group }}"
@@ -17,6 +40,25 @@
     createhome: no
     shell: '/bin/bash'
     state: present
+
+- name: Add open file limits for weblogic user
+  lineinfile:
+    dest: '/etc/security/limits.d/99-nofile.conf'
+    line: "{{ weblogic_user }} {{ item.key }} {{ item.value }}"
+    create: yes
+  with_items: sys_ulimits.nofile
+
+- name: Add open process limits for weblogic user
+  lineinfile:
+    dest: '/etc/security/limits.d/99-nproc.conf'
+    line: "{{ weblogic_user }} {{ item.key }} {{ item.value }}"
+    create: yes
+  with_items: sys_ulimits.nproc
+
+- name: Create a shell profile with file and process limits for weblogic user
+  template:
+    src: oracle-limits.sh
+    dest: '/etc/profile.d/'
 
 - name: Create Oracle Inventory directory
   file:

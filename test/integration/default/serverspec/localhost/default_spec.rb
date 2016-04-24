@@ -5,7 +5,7 @@ require 'spec_helper'
 
 describe "Check for prerequisites" do
 
-  describe "in Centos 7 distribution", :if => (os[:family] == 'redhat' && os[:release] == '8.4') do
+  describe "in centos 7 distribution", :if => (os[:family] == 'redhat' && os[:release].start_with?('7.2')) do
     describe package('jdk1.8.0_77') do
       it { should be_installed }
     end
