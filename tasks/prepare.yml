@@ -55,10 +55,11 @@
     create: yes
   with_items: sys_ulimits.nproc
 
-- name: Create a shell profile with file and process limits for weblogic user
-  template:
-    src: oracle-limits.sh
-    dest: '/etc/profile.d/'
+# TODO: Check if limits need to be set when opening a shell session.
+# - name: Create a shell profile with file and process limits for weblogic user
+#   template:
+#     src: oracle-limits.sh
+#     dest: '/etc/profile.d/'
 
 - name: Create Oracle Inventory directory
   file:

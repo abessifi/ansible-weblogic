@@ -8,12 +8,12 @@
 
 - name: Prepare command for quick installation
   set_fact:
-    weblogic_install_command: "java -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} ORACLE_HOME={{ weblogic_home_dir }} -force > /tmp/weblogic-installation.log"
+    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} ORACLE_HOME={{ weblogic_home_dir }} -force > /tmp/weblogic-installation.log"
   when: weblogic_quick_installation
 
 - name: Prepare commande for generic installation in silent mode
   set_fact:
-    weblogic_install_command: "java -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} -silent -responseFile {{ weblogic_install_response_file }} > /tmp/weblogic-installation.log"
+    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} -silent -responseFile {{ weblogic_install_response_file }} > /tmp/weblogic-installation.log"
   when: not weblogic_quick_installation
 
 - name: Install WebLogic Server

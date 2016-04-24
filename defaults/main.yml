@@ -12,4 +12,4 @@ weblogic_force_installation: false
 weblogic_quick_installation: true
 weblogic_jar_url: ''
 weblogic_download_dir: '/srv/files/'
-weblogic_installation_type: 'Complete with Examples' # WebLogic Server, Coherence, Complete with Examples
+weblogic_installation_type: 'WebLogic Server' # WebLogic Server, Coherence, Complete with Examples
