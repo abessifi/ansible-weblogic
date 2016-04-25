@@ -3,4 +3,6 @@
 - hosts: localhost
   roles:
     - role: ansible-weblogic
-      weblogic_jar_url: 'http://192.168.0.14/distrib/fmw_12.2.1.0.0_wls_quick.jar'
+      #weblogic_jar_url: 'http://192.168.0.14/distrib/fmw_12.2.1.0.0_wls_quick.jar'
+      weblogic_jar_url: 'http://192.168.0.14/distrib/fmw_12.2.1.0.0_wls.jar'
+      weblogic_quick_installation: false

@@ -63,7 +63,7 @@ describe "Check WebLogic installation" do
     it { should belong_to_group 'oinstall' }
   end
 
-  describe file('/u01/app/oracle/product/fmw/12.2.1.0/WebLogic_Server') do
+  describe file('/u01/app/oracle/product/fmw/12.2.1.0') do
     it { should be_directory }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
@@ -73,6 +73,10 @@ describe "Check WebLogic installation" do
     describe file(loc_file) do
       it { should exist }
     end
+  end
+
+  describe file('/u01/app/oracle/product/fmw/12.2.1.0/oracle_common/common/bin/wlst.sh') do
+    it { should contain "JVM_ARGS=\"-Dprod.props.file" }
   end
 
 end

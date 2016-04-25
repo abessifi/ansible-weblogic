@@ -2,24 +2,24 @@
 
 - name: Prepare installation response file
   template:
-    src: wls-install-12c.rsp.j2
+    src: "install-wls-{{ weblogic_version }}.rsp.j2"
     dest: "{{ weblogic_install_response_file }}"
   when: not weblogic_quick_installation
 
 - name: Prepare command for quick installation
   set_fact:
-    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} ORACLE_HOME={{ weblogic_home_dir }} -force > /tmp/weblogic-installation.log"
+    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} ORACLE_HOME={{ oracle_home_dir }} -force > /tmp/weblogic-installation.log"
   when: weblogic_quick_installation
 
 - name: Prepare commande for generic installation in silent mode
   set_fact:
-    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} -silent -responseFile {{ weblogic_install_response_file }} > /tmp/weblogic-installation.log"
+    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} -silent -responseFile {{ weblogic_install_response_file }} -force -logfile /tmp/weblogic-installation.log"
   when: not weblogic_quick_installation
 
 - name: Install WebLogic Server
   shell: "{{ weblogic_install_command }}"
   args:
-    creates: "{{ weblogic_home_dir }}/oraInst.lock"
+    creates: "{{ oracle_home_dir }}/oraInst.lock"
 
 #
 #

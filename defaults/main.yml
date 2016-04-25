@@ -6,10 +6,10 @@ oracle_home_dir: "{{ oracle_base_path }}/product/fmw/{{ weblogic_release }}"
 
 weblogic_version: '12c'
 weblogic_release: '12.2.1.0'
-weblogic_home_dir: "{{ oracle_home_dir }}/WebLogic_Server"
+weblogic_home_dir: "{{ oracle_home_dir }}/wlserver"
 weblogic_install_response_file: "/tmp/wls.rsp"
 weblogic_force_installation: false
 weblogic_quick_installation: true
 weblogic_jar_url: ''
-weblogic_download_dir: '/srv/files/'
+weblogic_download_dir: '/srv/files'
 weblogic_installation_type: 'WebLogic Server' # WebLogic Server, Coherence, Complete with Examples
