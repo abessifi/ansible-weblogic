@@ -16,12 +16,12 @@
 - name: Check if oracle weblogic is already installed
   stat:
     path: "{{ oracle_home_dir }}"
-  register: wls_home
+  register: oracle_home
 
 - debug:
     msg: "Oracle WebLogic is already installed in {{ oracle_home_dir }}"
-  when: wls_home.stat.exists
+  when: oracle_home.stat.exists
 
 - set_fact:
     weblogic_already_installed: true
-  when: wls_home.stat.exists
+  when: oracle_home.stat.exists
