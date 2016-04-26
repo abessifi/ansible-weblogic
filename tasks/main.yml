@@ -8,7 +8,7 @@
 
 - include: install.yml
   become: yes
-  become_user: "{{ weblogic_user }}"
+  become_user: "{{ weblogic.user }}"
   when: weblogic_force_installation or (not weblogic_already_installed)
 
 - include: create-domain.yml

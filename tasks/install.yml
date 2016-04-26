@@ -3,34 +3,34 @@
 - name: Prepare installation response file
   template:
     src: "install-wls-{{ weblogic_version }}.rsp.j2"
-    dest: "{{ weblogic_install_response_file }}"
+    dest: "{{ weblogic.install_response_file }}"
   when: not weblogic_quick_installation
 
 - name: Prepare command for quick installation
   set_fact:
-    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} ORACLE_HOME={{ oracle_home_dir }} -force > /tmp/weblogic-installation.log"
+    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic.download_dir }}/{{ weblogic_jar_file }} ORACLE_HOME={{ oracle.home_dir }} -force > /tmp/weblogic-installation.log"
   when: weblogic_quick_installation
 
 - name: Prepare commande for generic installation in silent mode
   set_fact:
-    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_download_dir }}/{{ weblogic_jar_file }} -silent -responseFile {{ weblogic_install_response_file }} -force > /tmp/weblogic-installation.log"
+    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic.download_dir }}/{{ weblogic_jar_file }} -silent -responseFile {{ weblogic.install_response_file }} -force > /tmp/weblogic-installation.log"
   when: not weblogic_quick_installation
 
 - name: Install WebLogic Server
   shell: "{{ weblogic_install_command }}"
   args:
-    creates: "{{ oracle_home_dir }}/oraInst.lock"
+    creates: "{{ oracle.home_dir }}/oraInst.lock"
 
 - name: Update 'JVM_ARGS' variable within wlst script
   lineinfile:
-    dest: "{{ oracle_home_dir }}/oracle_common/common/bin/wlst.sh"
+    dest: "{{ oracle.home_dir }}/oracle_common/common/bin/wlst.sh"
     regexp: '^JVM_ARGS='
     line: JVM_ARGS="-Dprod.props.file='${WL_HOME}'/.product.properties ${WLST_PROPERTIES} ${JVM_D64} ${UTILS_MEM_ARGS} ${COMMON_JVM_ARGS} ${CONFIG_JVM_ARGS} -Djava.security.egd=file:///dev/urandom"
   when: weblogic_version == '12c'
 
 - name: Check if weblogic home is correctly created
   stat:
-    path: "{{ weblogic_home_dir }}"
+    path: "{{ weblogic.home_dir }}"
   register: wls_home
 
 - set_fact:

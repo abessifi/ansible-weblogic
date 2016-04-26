@@ -2,6 +2,9 @@
 
 driver:
   name: vagrant
+  customize:
+    memory: 2048
+    cpus: 4
 
 provisioner:
   name: ansible_playbook

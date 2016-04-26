@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $USER = "{{ weblogic_user }}" ]; then
+if [ $USER = "{{ weblogic.user }}" ]; then
   if [ $SHELL = "/bin/ksh" ]; then
     ulimit -p {{ sys_ulimits.nproc[1]['value'] }}
     ulimit -n {{ sys_ulimits.nofile[1]['value'] }}

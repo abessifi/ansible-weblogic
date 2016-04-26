@@ -39,8 +39,7 @@ describe "Check installation prerequisites" do
   end
 
   ['/etc/security/limits.d/99-nofile.conf',
-   '/etc/security/limits.d/99-nproc.conf',
-   '/etc/profile.d/oracle-limits.sh'
+   '/etc/security/limits.d/99-nproc.conf'
   ].each do |ulimits_conf_file|
     describe file(ulimits_conf_file) do
       it { should be_file }
@@ -63,7 +62,7 @@ describe "Check WebLogic installation" do
     it { should belong_to_group 'oinstall' }
   end
 
-  describe file('/u01/app/oracle/product/fmw/12.2.1.0') do
+  describe file('/u01/app/oracle/product/middleware') do
     it { should be_directory }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
@@ -75,7 +74,7 @@ describe "Check WebLogic installation" do
     end
   end
 
-  describe file('/u01/app/oracle/product/fmw/12.2.1.0/oracle_common/common/bin/wlst.sh') do
+  describe file('/u01/app/oracle/product/middleware/oracle_common/common/bin/wlst.sh') do
     it { should contain "JVM_ARGS=\"-Dprod.props.file" }
   end
 

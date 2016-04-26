@@ -1,9 +1,19 @@
 ---
 
-weblogic_user: oracle
-weblogic_group: oinstall
+oracle_base_path: '/u01/app/oracle'
 
-weblogic_supported_versions: ['11g', '12c']
+oracle:
+  inventory_path: "{{ oracle_base_path }}/inventory"
+  home_dir: "{{ oracle_base_path }}/product/middleware/"
+
+weblogic:
+  user: oracle
+  group: oinstall
+  supported_versions: ['11g', '12c']
+  home_dir: "{{ oracle.home_dir }}/wlserver"
+  install_response_file: "/tmp/wls.rsp"
+  download_dir: '/srv/files'
+
 weblogic_already_installed: false
 
 rh:
