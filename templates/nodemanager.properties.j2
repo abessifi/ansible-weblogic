@@ -1,0 +1,30 @@
+#
+# This file is manager by Ansible
+#
+
+# Nodemanager properties
+
+DomainsFile={{ weblogic_nodemanager_home }}/nodemanager.domains
+LogLimit=0
+PropertiesVersion={{ weblogic_release }}
+AuthenticationEnabled=true
+NodeManagerHome={{ weblogic_nodemanager_home }}
+LogLevel=INFO
+DomainsFileEnabled=true
+StartScriptName=startWebLogic.sh
+ListenAddress=localhost
+NativeVersionEnabled=true
+ListenPort={{ weblogic.nodemanager_listen_port }}
+LogToStderr=true
+SecureListener=true
+LogCount=1
+StopScriptEnabled=false
+QuitEnabled=false
+LogAppend=true
+StateCheckInterval=500
+CrashRecoveryEnabled=false
+StartScriptEnabled=true
+LogFile={{ weblogic_nodemanager_home }}/nodemanager.log
+LogFormatter=weblogic.nodemanager.server.LogFormatter
+ListenBacklog=50
+

@@ -1,20 +1,23 @@
 ---
 
 oracle_base_path: '/u01/app/oracle'
+weblogic_already_installed: false
 
 oracle:
-  inventory_path: "{{ oracle_base_path }}/inventory"
-  home_dir: "{{ oracle_base_path }}/product/middleware/"
-
-weblogic:
   user: oracle
   group: oinstall
-  supported_versions: ['11g', '12c']
-  home_dir: "{{ oracle.home_dir }}/wlserver"
-  install_response_file: "/tmp/wls.rsp"
-  download_dir: '/srv/files'
+  inventory_path: "{{ oracle_base_path }}/inventory"
+  home_dir: '/home/oracle'
+  middleware_dir: "{{ oracle_base_path }}/product/middleware"
 
-weblogic_already_installed: false
+weblogic:
+  supported_versions: ['11g', '12c']
+  home_dir: "{{ oracle.middleware_dir }}/wlserver"
+  scripts_dir: "{{ oracle.home_dir }}/scripts"
+  download_dir: "{{ oracle.home_dir }}/files"
+  logs_dir: "{{ oracle.home_dir }}/logs"
+  install_response_file: "{{ oracle.home_dir }}/files/wls.rsp"
+  nodemanager_listen_port: 5556
 
 rh:
   packages_depends:

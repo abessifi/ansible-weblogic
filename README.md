@@ -27,9 +27,9 @@ Role Variables
 
 *it is recommended to keep these vars by default*
 
-- **oracle_weblogic_user**: oraclefmw
-- **oracle_weblogic_group**: ofmwinstall
-- **oracle_weblogic_user_home**: /opt/oraclefmw
+- **oracle_oracle.user**: oraclefmw
+- **oracle_oracle.group**: ofmwinstall
+- **oracle_oracle.user_home**: /opt/oraclefmw
 
 - **oracle_weblogic_oracle_home**: /opt/oraclefmw/product/oracle_home
 - **oracle_weblogic_wls_home**: "{{ oracle_weblogic_oracle_home }}/wlserver"
@@ -37,7 +37,7 @@ Role Variables
 - **oracle_weblogic_inventory_directory**: /opt/oraclefmw/inventory
 - **oracle_weblogic_inventory_file**: /opt/oraclefmw/oraInst.loc
 
-- **oracle_weblogic_response_file**: "{{ oracle_weblogic_user_home }}/wls.rsp"
+- **oracle_weblogic_response_file**: "{{ oracle_oracle.user_home }}/wls.rsp"
 
 - **oracle_weblogic_already_installed**: false
 

@@ -27,56 +27,55 @@
     state: present
   with_dict: kernel_params
 
-- name: Create weblogic group
+- name: Create oracle.group
   group:
-    name: "{{ weblogic.group }}"
+    name: "{{ oracle.group }}"
     state: present
 
-- name: Create weblogic user
+- name: Create oracle user
   user:
-    name: "{{ weblogic.user }}"
-    group: "{{ weblogic.group }}"
-    home: "{{ weblogic.home_dir }}"
-    createhome: no
+    name: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+    home: "{{ oracle.home_dir }}"
     shell: '/bin/bash'
     state: present
 
-- name: Add open file limits for weblogic user
+- name: Add open file limits for oracle user
   lineinfile:
     dest: '/etc/security/limits.d/99-nofile.conf'
-    line: "{{ weblogic.user }} {{ item.key }} {{ item.value }}"
+    line: "{{ oracle.user }} {{ item.key }} {{ item.value }}"
     create: yes
   with_items: sys_ulimits.nofile
 
-- name: Add open process limits for weblogic user
+- name: Add open process limits for oracle user
   lineinfile:
     dest: '/etc/security/limits.d/99-nproc.conf'
-    line: "{{ weblogic.user }} {{ item.key }} {{ item.value }}"
+    line: "{{ oracle.user }} {{ item.key }} {{ item.value }}"
     create: yes
   with_items: sys_ulimits.nproc
 
 # TODO: Check if limits need to be set when opening a shell session.
-# - name: Create a shell profile with file and process limits for weblogic user
+# - name: Create a shell profile with file and process limits for oracle user
 #   template:
 #     src: oracle-limits.sh
 #     dest: '/etc/profile.d/'
-
-- name: Create Oracle Inventory directory
-  file:
-    path: "{{ oracle.inventory_path }}"
-    state: directory
-    owner: "{{ weblogic.user }}"
-    group: "{{ weblogic.group }}"
 
 - name: Prepare oracle inventory parameters
   template:
     src: oraInst.loc.j2
     dest: "/etc/oraInst.loc"
 
-- name: Create download directory
+- name: Create needed directories
   file:
-    path: "{{ weblogic.download_dir }}"
+    path: "{{ item }}"
     state: directory
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+  with_items:
+    - "{{ weblogic.logs_dir }}"
+    - "{{ weblogic.scripts_dir }}"
+    - "{{ weblogic.download_dir }}"
+    - "{{ oracle.inventory_path }}"
 
 - set_fact:
     weblogic_jar_file: "{{ weblogic_jar_url|basename }}"
@@ -95,11 +94,11 @@
 - name: Set installation Jar file permissions
   file:
     path: "{{ weblogic.download_dir }}/{{ weblogic_jar_file }}"
-    owner: "{{ weblogic.user }}"
-    group: "{{ weblogic.group }}"
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
 
 - name: Remove existing oracle home directory
   file:
-    path: "{{ oracle.home_dir }}"
+    path: "{{ oracle.middleware_dir }}"
     state: absent
   when: weblogic_force_installation

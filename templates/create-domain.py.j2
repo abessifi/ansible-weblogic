@@ -1,0 +1,70 @@
+#
+# Database connexion params
+#
+# TODO
+
+#
+# New domain params
+#
+
+domain_name = '{{ weblogic_domain_name }}'
+middleware_home = '{{ oracle.middleware_dir }}'
+weblogic_home = '{{ weblogic.home_dir }}'
+domain_application_home = '{{ oracle.middleware_dir }}/user_projects/applications/{{ weblogic_domain_name }}'
+domain_configuration_home = '{{ oracle.middleware_dir }}/user_projects/domains/{{ weblogic_domain_name }}'
+node_manager_home = '{{ oracle.middleware_dir }}/user_projects/nodemanagers/{{ weblogic_domain_name }}'
+weblogic_template = weblogic_home + '/common/templates/wls/wls.jar';
+
+# Load the default domain template
+readTemplate(weblogic_template);
+setOption('DomainName', domain_name);
+setOption('OverwriteDomain', 'true');
+setOption('ServerStartMode', 'prod');
+setOption('NodeManagerType', 'CustomLocationNodeManager');
+setOption('NodeManagerHome', node_manager_home);
+
+cd('/Security/base_domain/User/weblogic');
+cmo.setName('{{ weblogic_admin_user }}');
+cmo.setUserPassword('{{ weblogic_admin_password }}');
+cmo.setPassword('{{ weblogic_admin_password }}');
+
+cd('/');
+
+print "Save domain";
+writeDomain(domain_configuration_home);
+closeTemplate();
+
+print 'Read domain ';
+readDomain(domain_configuration_home);
+
+print 'Add templates';
+setOption('AppDir', domain_application_home);
+
+#
+# Connect to oracle DB and create a repository
+#
+# TODO
+
+cd("/SecurityConfiguration/" + domain_name);
+cmo.setNodeManagerUsername('{{ nodemanager_username }}');
+cmo.setNodeManagerPasswordEncrypted('{{ nodemanager_password }}');
+
+cd('/Server/AdminServer');
+create('AdminServer','SSL');
+
+cd('SSL/AdminServer');
+set('Enabled', 'True');
+set('ListenPort', 7002);
+cmo.setHostnameVerificationIgnored(true);
+cmo.setHostnameVerifier(None);
+cmo.setTwoWaySSLEnabled(false);
+cmo.setClientCertificateEnforced(false);
+
+cd('/SecurityConfiguration/'+ domain_name +'/Realms/myrealm');
+cd('AuthenticationProviders/DefaultAuthenticator');
+set('ControlFlag', 'SUFFICIENT');
+cd('../../');
+
+print "Update domain";
+updateDomain();
+closeDomain();

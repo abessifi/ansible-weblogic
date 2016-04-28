@@ -1,4 +1,68 @@
 ---
 
-- debug:
-    msg: "Not yet implemented !"
+- name: Set the Weblogic default domain and nodemanager homes
+  set_fact:
+    weblogic_domain_home: "{{ oracle.middleware_dir }}/user_projects/domains/{{ weblogic_domain_name }}"
+    weblogic_nodemanager_home: "{{ oracle.middleware_dir }}/user_projects/nodemanagers/{{ weblogic_domain_name }}"
+
+- name: Check if the basic_domain is already created
+  stat:
+    path: "{{ weblogic_domain_home }}"
+  register: wls_domain_dir
+
+- name: Copy create-domain WLST script
+  template:
+    src: create-domain.py.j2
+    dest: "{{ weblogic.scripts_dir }}/create-domain.py"
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+
+- name: Execute create domain script
+  shell: "{{ oracle.middleware_dir }}/oracle_common/common/bin/wlst.sh {{ weblogic.scripts_dir }}/create-domain.py > {{ weblogic.logs_dir }}/create_domain_{{ weblogic_domain_name }}_$(date +'%F').log 2>&1"
+  when: not wls_domain_dir.stat.exists
+
+- name: Update 'JAVA_OPTIONS' variable within startNodeManager script
+  lineinfile:
+    dest: "{{ weblogic_domain_home }}/bin/startNodeManager.sh"
+    regexp: '^JAVA_OPTIONS='
+    line: 'JAVA_OPTIONS="${JAVA_OPTIONS} -Djava.security.egd=file:///dev/urandom -Dweblogic.RootDirectory=${DOMAIN_HOME}"'
+
+- name: Create a domain's security subdirectory
+  file:
+    path:  "{{ weblogic_domain_home }}/servers/AdminServer/security"
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+    state: directory
+
+- name: Copy AdminServer and Nodemanager properties files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+  with_items:
+    - { src: boot.properties.j2, dest: "{{ weblogic_domain_home }}/servers/AdminServer/security/boot.properties" }
+    - { src: nodemanager.properties.j2, dest: "{{ weblogic_nodemanager_home }}/nodemanager.properties" }
+
+- name: Copy Nodemanager systemd script
+  template:
+    src: nodemanager.service.j2
+    dest: /etc/systemd/system/nodemanager.service
+    mode: 0664
+  become: yes
+  become_user: root
+
+- name: Enable and start Nodemanager service
+  service:
+    name: nodemanager
+    enabled: yes
+    state: started
+  become: yes
+  become_user: root
+
+- name: Waiting for Nodemanager to come up
+  wait_for:
+    port: "{{ weblogic.nodemanager_listen_port }}"
+    delay: 4
+    timeout: 30
+  ignore_errors: yes

@@ -3,6 +3,9 @@
 
 require 'spec_helper'
 
+oracle_base_dir='/u01/app/oracle'
+oracle_middleware_dir="#{oracle_base_dir}/product/middleware"
+
 describe "Check installation prerequisites" do
 
   describe "in centos 7 distribution",
@@ -62,19 +65,21 @@ describe "Check WebLogic installation" do
     it { should belong_to_group 'oinstall' }
   end
 
-  describe file('/u01/app/oracle/product/middleware') do
+  describe file(oracle_middleware_dir) do
     it { should be_directory }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
   end
 
-  ['/etc/oraInst.loc', '/u01/app/oracle/inventory/ContentsXML/inventory.xml'].each do |loc_file|
+  ['/etc/oraInst.loc',
+   "#{oracle_base_dir}/inventory/ContentsXML/inventory.xml"
+  ].each do |loc_file|
     describe file(loc_file) do
       it { should exist }
     end
   end
 
-  describe file('/u01/app/oracle/product/middleware/oracle_common/common/bin/wlst.sh') do
+  describe file("#{oracle_middleware_dir}/oracle_common/common/bin/wlst.sh") do
     it { should contain "JVM_ARGS=\"-Dprod.props.file" }
   end
 

@@ -8,3 +8,8 @@ weblogic_force_installation: false
 weblogic_quick_installation: true
 weblogic_jar_url: ''
 weblogic_installation_type: 'WebLogic Server' # WebLogic Server, Coherence, Complete with Examples
+weblogic_domain_name: 'base_domain'
+weblogic_admin_user: 'weblogic'
+weblogic_admin_password: 'manager1'
+nodemanager_username: 'weblogic'
+nodemanager_password: 'manager1'
