@@ -1,0 +1,9 @@
+# Connect to the AdminServer
+connect('{{ weblogic_admin_user }}', '{{ weblogic_admin_password }}');
+
+# Start the Managed Server
+start('{{ weblogic.managed_server_name }}', block='false');
+
+# Disconnect from AdminServer
+disconnect();
+exit();

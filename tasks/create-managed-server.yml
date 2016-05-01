@@ -1,9 +1,59 @@
 ---
 
-- name: Copy create managed-server script
+#
+# Create a Managed Server (default one)
+#
+
+- name: Set the Weblogic default Managed Server home
+  set_fact:
+    weblogic_managed_server_home: "{{ weblogic_domain_home }}/servers/{{ weblogic.managed_server_name }}"
+
+- name: Copy create/start Managed Server scripts
   template:
-    src: create-managed-server.py.j2
-    dest: "{{ weblogic.scripts_dir }}/create-managed-server.py"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: "{{ oracle.user }}"
     group: "{{ oracle.group }}"
+    mode: 0750
+  with_items:
+    - { src: 'create-managed-server.py.j2', dest: "{{ weblogic.scripts_dir }}/create-managed-server.py" }
+    - { src: 'start-managed-server.py.j2', dest: "{{ weblogic.scripts_dir }}/start-managed-server.py" }
 
+- name: Check if the Managed Server is already created
+  stat:
+    path: "{{ weblogic_managed_server_home }}"
+  register: wls_managed_server_dir
+
+- name: Create a Managed Server
+  shell: "{{ oracle.middleware_dir }}/oracle_common/common/bin/wlst.sh {{ weblogic.scripts_dir }}/create-managed-server.py > {{ weblogic.logs_dir }}/create_{{ weblogic.managed_server_name }}_{{ weblogic_domain_name }}_$(date +'%F').log 2>&1"
+  when: not wls_managed_server_dir.stat.exists
+
+- name: Create a security subdirectory for Managed Server
+  file:
+    path:  "{{ weblogic_managed_server_home }}/security"
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+    state: directory
+
+- name: Copy boot.properties file to the Managed Server
+  template:
+    src: boot.properties.j2
+    dest: "{{ weblogic_managed_server_home }}/security/boot.properties"
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+
+- name: Check if Managed Server is already running
+  shell: "pgrep -a java -u {{ oracle.user }} | egrep 'Dweblogic.Name={{ weblogic.managed_server_name }}.*weblogic.Server$'"
+  register: check_managed_server
+  ignore_errors: yes
+
+- name: Start Managed Server
+  shell: "{{ oracle.middleware_dir }}/oracle_common/common/bin/wlst.sh {{ weblogic.scripts_dir }}/start-managed-server.py"
+  when: check_managed_server.rc != 0
+
+- name: Wait for Managed Server to startup
+  wait_for:
+    port: "{{ weblogic.managed_server_listen_port }}"
+    delay: 4
+    timeout: 30
+  ignore_errors: yes

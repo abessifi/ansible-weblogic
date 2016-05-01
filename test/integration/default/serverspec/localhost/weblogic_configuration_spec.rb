@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 require 'spec_helper'
-require 'test_params'
+require 'wls_params'
 
 describe "Check default created domain" do
 
@@ -80,7 +80,13 @@ describe "Check WebLogic AdminServer" do
     it { should contain 'JAVA_OPTIONS="-Djava.security.egd=file:///dev/urandom"' }
   end
 
-  describe file("#{WEBLOGIC_DOMAIN_HOME}/servers/AdminServer/security/boot.properties") do
+  describe file("#{WEBLOGIC_ADMIN_SERVER_HOME}") do
+    it { should be_directory }
+    it { should be_owned_by 'oracle' }
+    it { should be_grouped_into 'oinstall' }
+  end
+
+  describe file("#{WEBLOGIC_ADMIN_SERVER_HOME}/security/boot.properties") do
     it { should be_file }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
@@ -88,7 +94,7 @@ describe "Check WebLogic AdminServer" do
     it { should contain 'password=' }
   end
 
-  describe command('pgrep -a java -u oracle | grep \'weblogic.Server\'') do
+  describe command('pgrep -a java -u oracle | egrep \'Dweblogic.Name=AdminServer.*weblogic.Server$\'') do
     its(:exit_status) { should eq 0 }
   end
 
@@ -102,8 +108,28 @@ describe "Check WebLogic AdminServer" do
 
 end
 
+describe "Check WebLogic ManagedServer" do
 
-describe "Check WebLogic AdminServer" do
+  describe file(WEBLOGIC_MANAGED_SERVER_HOME) do
+    it { should be_directory }
+    it { should be_owned_by 'oracle' }
+    it { should be_grouped_into 'oinstall' }
+  end
 
+  describe file("#{WEBLOGIC_MANAGED_SERVER_HOME}/security/boot.properties") do
+    it { should be_file }
+    it { should be_owned_by 'oracle' }
+    it { should be_grouped_into 'oinstall' }
+    it { should contain 'username=' }
+    it { should contain 'password=' }
+  end
+
+  describe command('pgrep -a java -u oracle | egrep \'Dweblogic.Name=ManagedServer1.*weblogic.Server$\'') do
+    its(:exit_status) { should eq 0 }
+  end
+
+  describe port(7002) do
+    it { should be_listening.with('tcp6') }
+  end
 
 end

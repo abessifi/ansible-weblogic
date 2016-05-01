@@ -5,6 +5,8 @@ ORACLE_BASE_DIR="/u01/app/oracle"
 ORACLE_MIDDLEWARE_DIR="#{ORACLE_BASE_DIR}/product/middleware"
 WEBLOGIC_DOMAIN_HOME="#{ORACLE_MIDDLEWARE_DIR}/user_projects/domains/base_domain"
 WEBLOGIC_NODEMANAGER_HOME="#{ORACLE_MIDDLEWARE_DIR}/user_projects/nodemanagers/base_domain"
+WEBLOGIC_ADMIN_SERVER_HOME="#{WEBLOGIC_DOMAIN_HOME}/servers/AdminServer"
+WEBLOGIC_MANAGED_SERVER_HOME="#{WEBLOGIC_DOMAIN_HOME}/servers/ManagedServer1"
 
 SYS_KERNEL_PARAMS = {
   'vm.swappiness' => 10,

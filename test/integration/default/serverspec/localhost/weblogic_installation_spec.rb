@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 require 'spec_helper'
-require 'test_params'
+require 'wls_params'
 
 describe "Check installation prerequisites" do
 
