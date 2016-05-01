@@ -14,4 +14,9 @@
 - include: create-domain.yml
   become: yes
   become_user: "{{ oracle.user }}"
+  when: not weblogic_already_installed
+
+- include: create-managed-server.yml
+  become: yes
+  become_user: "{{ oracle.user }}"
   # when: not weblogic_already_installed

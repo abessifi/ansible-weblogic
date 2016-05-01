@@ -1,5 +1,9 @@
 ---
 
+#
+# Create base domain (default domain)
+#
+
 - name: Set the Weblogic default domain and nodemanager homes
   set_fact:
     weblogic_domain_home: "{{ oracle.middleware_dir }}/user_projects/domains/{{ weblogic_domain_name }}"
@@ -20,6 +24,10 @@
 - name: Execute create domain script
   shell: "{{ oracle.middleware_dir }}/oracle_common/common/bin/wlst.sh {{ weblogic.scripts_dir }}/create-domain.py > {{ weblogic.logs_dir }}/create_domain_{{ weblogic_domain_name }}_$(date +'%F').log 2>&1"
   when: not wls_domain_dir.stat.exists
+
+#
+# Configure the Nodemanager and the AdminServer
+#
 
 - name: Update 'JAVA_OPTIONS' variable within startNodeManager script
   lineinfile:
@@ -44,6 +52,14 @@
     - { src: boot.properties.j2, dest: "{{ weblogic_domain_home }}/servers/AdminServer/security/boot.properties" }
     - { src: nodemanager.properties.j2, dest: "{{ weblogic_nodemanager_home }}/nodemanager.properties" }
 
+- name: Copy 'setUserOverrides.sh' script
+  copy:
+    src: setUserOverrides.sh
+    dest: "{{ weblogic_domain_home }}/bin/setUserOverrides.sh"
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+    mode: 0750
+
 - name: Copy Nodemanager systemd script
   template:
     src: nodemanager.service.j2
@@ -51,6 +67,10 @@
     mode: 0664
   become: yes
   become_user: root
+
+#
+# Start the Nodemanager and the AdminServer
+#
 
 - name: Enable and start Nodemanager service
   service:
@@ -60,9 +80,26 @@
   become: yes
   become_user: root
 
-- name: Waiting for Nodemanager to come up
+- name: Wait for Nodemanager to startup
   wait_for:
     port: "{{ weblogic.nodemanager_listen_port }}"
-    delay: 4
+    delay: 2
     timeout: 30
   ignore_errors: yes
+
+- name: Copy AdminServer startup script
+  template:
+    src: start-admin-server.py.j2
+    dest: "{{ weblogic.scripts_dir }}/start-admin-server.py"
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+    mode: 0755
+
+- name: Execute AdminServer startup script
+  shell: "nohup {{ oracle.middleware_dir }}/oracle_common/common/bin/wlst.sh {{ weblogic.scripts_dir }}/start-admin-server.py > {{ weblogic.logs_dir }}/start_AdminServer_base_domain_$(date +'%F').log 2>&1 &"
+
+- name: Wait for AdminServer to startup
+  wait_for:
+    port: "{{ weblogic.adminserver_listen_port }}"
+    delay: 4
+    timeout: 30

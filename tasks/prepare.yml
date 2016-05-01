@@ -57,8 +57,8 @@
 # TODO: Check if limits need to be set when opening a shell session.
 # - name: Create a shell profile with file and process limits for oracle user
 #   template:
-#     src: oracle-limits.sh
-#     dest: '/etc/profile.d/'
+#     src: oracle-limits.sh.j2
+#     dest: '/etc/profile.d/oracle-limits.sh'
 
 - name: Prepare oracle inventory parameters
   template:
@@ -74,7 +74,6 @@
   with_items:
     - "{{ weblogic.logs_dir }}"
     - "{{ weblogic.scripts_dir }}"
-    - "{{ weblogic.download_dir }}"
     - "{{ oracle.inventory_path }}"
 
 - set_fact:

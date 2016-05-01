@@ -1,0 +1,9 @@
+---
+
+- name: Copy create managed-server script
+  template:
+    src: create-managed-server.py.j2
+    dest: "{{ weblogic.scripts_dir }}/create-managed-server.py"
+    owner: "{{ oracle.user }}"
+    group: "{{ oracle.group }}"
+

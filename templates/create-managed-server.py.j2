@@ -1,0 +1,27 @@
+ADMIN_SERVER_URL = 't3://' + 'localhost' + ':' + '{{ weblogic.adminserver_listen_port }}';
+
+connect('{{ weblogic_admin_user }}', '{{ weblogic_admin_password }}', ADMIN_SERVER_URL);
+
+edit();
+startEdit();
+
+cd('/')
+cmo.createMachine('{{ ansible_fqdn }}')
+
+cd('/Machines/' + '{{ weblogic.managed_server_name }}' + '/NodeManager/' + '{{ ansible_fqdn }}')
+cmo.setListenAddress('{{ weblogic.nodemanager_listen_address }}')
+
+cd('/')
+cmo.createServer('{{ weblogic.managed_server_name }}')
+
+cd('/Servers/' + '{{ weblogic.managed_server_name }}')
+cmo.setListenAddress('{{ ansible_fqdn }}')
+cmo.setListenPort({{ managed_server_listen_port }})
+cmo.setMachine(getMBean('/Machines/' + '{{ ansible_fqdn }}'))
+applyJRF(target='{{ weblogic.managed_server_name }}', domainDir='{{ weblogic_domain_home }}');
+
+# applyJRF wil call save and activate
+#save();
+#activate(block='true');
+disconnect();
+

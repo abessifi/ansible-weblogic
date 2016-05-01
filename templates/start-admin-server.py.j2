@@ -1,0 +1,5 @@
+nmConnect('{{ nodemanager_username }}', '{{ nodemanager_password }}', '{{ weblogic.nodemanager_listen_address }}', '{{ weblogic.nodemanager_listen_port }}', '{{ weblogic_domain_name }}');
+
+nmStart('AdminServer');
+
+nmDisconnect();

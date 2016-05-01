@@ -2,9 +2,7 @@
 # vi: set ft=ruby :
 
 require 'spec_helper'
-
-oracle_base_dir='/u01/app/oracle'
-oracle_middleware_dir="#{oracle_base_dir}/product/middleware"
+require 'test_params'
 
 describe "Check installation prerequisites" do
 
@@ -19,26 +17,17 @@ describe "Check installation prerequisites" do
       end
   end
 
+  SYS_KERNEL_PARAMS.each do |sys_key, sys_value|
+    context linux_kernel_parameter(sys_key) do
+      its(:value) { should eq sys_value }
+    end
+  end
+
   describe file('/etc/sysctl.conf') do
     it { should be_file }
     it { should be_mode 644 }
     it { should be_owned_by 'root' }
     it { should be_grouped_into 'root' }
-    it { should contain "kernel.shmmax=2147483648" }
-    it { should contain "net.core.rmem_max=16777216" }
-    it { should contain "net.ipv4.tcp_rmem=4096 87380 16777216" }
-    it { should contain "vm.swappiness=10" }
-    it { should contain "fs.file-max=262144" }
-    it { should contain "net.ipv4.tcp_keepalive_time=300" }
-  end
-
-  describe command("sysctl -a") do
-    its(:stdout) { should match /^kernel\.shmmax = 2147483648$/ }
-    its(:stdout) { should match /^net\.core\.rmem_max = 16777216$/ }
-    its(:stdout) { should match /^net\.ipv4\.tcp_rmem = 4096\s+87380\s+16777216$/ }
-    its(:stdout) { should match /^vm\.swappiness = 10$/ }
-    its(:stdout) { should match /^fs\.file-max = 262144$/ }
-    its(:stdout) { should match /^net\.ipv4\.tcp_keepalive_time = 300$/ }
   end
 
   ['/etc/security/limits.d/99-nofile.conf',
@@ -65,21 +54,21 @@ describe "Check WebLogic installation" do
     it { should belong_to_group 'oinstall' }
   end
 
-  describe file(oracle_middleware_dir) do
+  describe file(ORACLE_MIDDLEWARE_DIR) do
     it { should be_directory }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
   end
 
   ['/etc/oraInst.loc',
-   "#{oracle_base_dir}/inventory/ContentsXML/inventory.xml"
+   "#{ORACLE_BASE_DIR}/inventory/ContentsXML/inventory.xml"
   ].each do |loc_file|
     describe file(loc_file) do
       it { should exist }
     end
   end
 
-  describe file("#{oracle_middleware_dir}/oracle_common/common/bin/wlst.sh") do
+  describe file("#{ORACLE_MIDDLEWARE_DIR}/oracle_common/common/bin/wlst.sh") do
     it { should contain "JVM_ARGS=\"-Dprod.props.file" }
   end
 

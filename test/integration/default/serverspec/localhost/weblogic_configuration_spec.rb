@@ -2,51 +2,47 @@
 # vi: set ft=ruby :
 
 require 'spec_helper'
-
-oracle_base_dir='/u01/app/oracle'
-oracle_middleware_dir="#{oracle_base_dir}/product/middleware"
-weblogic_domain_home="#{oracle_middleware_dir}/user_projects/domains/base_domain"
-weblogic_nodemanager_home="#{oracle_middleware_dir}/user_projects/nodemanagers/base_domain"
+require 'test_params'
 
 describe "Check default created domain" do
 
-  describe file(weblogic_domain_home) do
+  describe file(WEBLOGIC_DOMAIN_HOME) do
     it { should be_directory }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
   end
 
-  describe file("#{oracle_middleware_dir}/domain-registry.xml") do
+  describe file("#{ORACLE_MIDDLEWARE_DIR}/domain-registry.xml") do
     it { should be_file }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
-    it { should contain "location=\"#{weblogic_domain_home}\"" }
+    it { should contain "location=\"#{WEBLOGIC_DOMAIN_HOME}\"" }
   end
 
 end
 
 describe "Check WebLogic Nodemanager" do
 
-  describe file("#{weblogic_domain_home}/bin/startNodeManager.sh") do
+  describe file("#{WEBLOGIC_DOMAIN_HOME}/bin/startNodeManager.sh") do
     it { should contain 'JAVA_OPTIONS="${JAVA_OPTIONS} -Djava.security.egd=file:///dev/urandom -Dweblogic.RootDirectory=${DOMAIN_HOME}"' }
   end
 
-  describe file("#{weblogic_nodemanager_home}/nodemanager.properties") do
+  describe file("#{WEBLOGIC_NODEMANAGER_HOME}/nodemanager.properties") do
     it { should be_file }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
-    it { should contain "DomainsFile=#{weblogic_nodemanager_home}/nodemanager.domains" }
+    it { should contain "DomainsFile=#{WEBLOGIC_NODEMANAGER_HOME}/nodemanager.domains" }
     it { should contain "StartScriptEnabled=true" }
   end
 
-  describe file("#{weblogic_nodemanager_home}/nodemanager.domains") do
+  describe file("#{WEBLOGIC_NODEMANAGER_HOME}/nodemanager.domains") do
     it { should be_file }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
-    it { should contain "#{weblogic_domain_home}" }
+    it { should contain "#{WEBLOGIC_DOMAIN_HOME}" }
   end
 
-  describe file("#{weblogic_domain_home}/security/DemoIdentity.jks") do
+  describe file("#{WEBLOGIC_DOMAIN_HOME}/security/DemoIdentity.jks") do
     it { should be_file }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
@@ -61,26 +57,39 @@ describe "Check WebLogic Nodemanager" do
     it { should be_running }
   end
 
-  describe file("#{weblogic_nodemanager_home}/nodemanager.pid") do
+  describe file("#{WEBLOGIC_NODEMANAGER_HOME}/nodemanager.process.id") do
     it { should be_file }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
   end
 
-  describe process('startNodeManage') do
-    its(:user) { should eq 'oracle' }
+  describe command('pgrep -a java -u oracle | grep \'weblogic.NodeManager\'') do
+    its(:exit_status) { should eq 0 }
   end
 
 end
 
 describe "Check WebLogic AdminServer" do
 
-  describe file("#{weblogic_domain_home}/servers/AdminServer/security/boot.properties") do
+  describe file("#{WEBLOGIC_DOMAIN_HOME}/bin/setUserOverrides.sh") do
+    it { should be_file }
+    it { should be_owned_by 'oracle' }
+    it { should be_grouped_into 'oinstall' }
+    it { should be_mode 750 }
+    it { should contain 'USER_MEM_ARGS="-Xms1024m -Xmx1024m"' }
+    it { should contain 'JAVA_OPTIONS="-Djava.security.egd=file:///dev/urandom"' }
+  end
+
+  describe file("#{WEBLOGIC_DOMAIN_HOME}/servers/AdminServer/security/boot.properties") do
     it { should be_file }
     it { should be_owned_by 'oracle' }
     it { should be_grouped_into 'oinstall' }
     it { should contain 'username=' }
     it { should contain 'password=' }
+  end
+
+  describe command('pgrep -a java -u oracle | grep \'weblogic.Server\'') do
+    its(:exit_status) { should eq 0 }
   end
 
   describe port(7001) do
@@ -93,3 +102,8 @@ describe "Check WebLogic AdminServer" do
 
 end
 
+
+describe "Check WebLogic AdminServer" do
+
+
+end
