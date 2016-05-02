@@ -76,23 +76,18 @@
     - "{{ weblogic.scripts_dir }}"
     - "{{ oracle.inventory_path }}"
 
-- set_fact:
-    weblogic_jar_file: "{{ weblogic_jar_url|basename }}"
-
 - name: Check if the installation Jar file exists already
   stat:
-    path: "{{ weblogic.download_dir }}/{{ weblogic_jar_file }}"
+    path: "{{ weblogic_jar_path }}"
   register: install_jar
 
-- name: Download the installation Jar file
-  uri:
-    url: "{{ weblogic_jar_url }}"
-    dest: "{{ weblogic.download_dir }}"
+- fail:
+    msg: "No such file: '{{ weblogic_jar_path }}' !"
   when: not install_jar.stat.exists
 
 - name: Set installation Jar file permissions
   file:
-    path: "{{ weblogic.download_dir }}/{{ weblogic_jar_file }}"
+    path: "{{ weblogic_jar_path }}"
     owner: "{{ oracle.user }}"
     group: "{{ oracle.group }}"
 

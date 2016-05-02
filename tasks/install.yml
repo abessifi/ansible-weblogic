@@ -8,12 +8,12 @@
 
 - name: Prepare command for quick installation
   set_fact:
-    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic.download_dir }}/{{ weblogic_jar_file }} ORACLE_HOME={{ oracle.middleware_dir }} -force > {{ weblogic.logs_dir }}/weblogic_quick_installation_$(date +'%F').log  2>&1"
+    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_jar_path }} ORACLE_HOME={{ oracle.middleware_dir }} -force > {{ weblogic.logs_dir }}/weblogic_quick_installation_$(date +'%F').log  2>&1"
   when: weblogic_quick_installation
 
 - name: Prepare commande for generic installation in silent mode
   set_fact:
-    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic.download_dir }}/{{ weblogic_jar_file }} -silent -responseFile {{ weblogic.install_response_file }} -force > {{ weblogic.logs_dir }}/weblogic_generic_installation_$(date +'%F').log 2>&1"
+    weblogic_install_command: "java -Xmx1024m -jar {{ weblogic_jar_path }} -silent -responseFile {{ weblogic.install_response_file }} -force > {{ weblogic.logs_dir }}/weblogic_generic_installation_$(date +'%F').log 2>&1"
   when: not weblogic_quick_installation
 
 - name: Install WebLogic Server

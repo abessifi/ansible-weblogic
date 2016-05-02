@@ -14,7 +14,7 @@ weblogic:
   supported_versions: ['11g', '12c']
   home_dir: "{{ oracle.middleware_dir }}/wlserver"
   scripts_dir: "{{ oracle.home_dir }}/scripts"
-  download_dir: "/srv/files"
+  download_dir: '/srv/files'
   logs_dir: "{{ oracle.home_dir }}/logs"
   install_response_file: "/tmp/wls.rsp"
   nodemanager_listen_port: 5556

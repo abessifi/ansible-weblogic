@@ -10,8 +10,8 @@
   when: weblogic_version not in weblogic.supported_versions
 
 - fail:
-    msg: "WebLogic download url is not defined !"
-  when: weblogic_jar_url|trim == ''
+    msg: "WebLogic jar path not defined !"
+  when: weblogic_jar_path|trim == ''
 
 - name: Check if oracle weblogic is already installed
   stat:
