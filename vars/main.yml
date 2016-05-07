@@ -1,7 +1,6 @@
 ---
 
 oracle_base_path: '/u01/app/oracle'
-weblogic_already_installed: false
 
 oracle:
   user: oracle
@@ -22,6 +21,10 @@ weblogic:
   adminserver_listen_port: 7001
   managed_server_name: "ManagedServer1"
   managed_server_listen_port: 7003
+
+weblogic_already_installed: false
+weblogic_domain_already_installed: false
+weblogic_managed_server_already_installed: false
 
 rh:
   packages_depends:

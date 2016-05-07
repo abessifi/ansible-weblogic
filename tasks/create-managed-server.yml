@@ -4,10 +4,6 @@
 # Create a Managed Server (default one)
 #
 
-- name: Set the Weblogic default Managed Server home
-  set_fact:
-    weblogic_managed_server_home: "{{ weblogic_domain_home }}/servers/{{ weblogic.managed_server_name }}"
-
 - name: Copy create/start Managed Server scripts
   template:
     src: "{{ item.src }}"

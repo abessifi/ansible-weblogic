@@ -1,5 +1,9 @@
 ---
 
+#
+# Installation version and Jar file validation
+#
+
 - debug:
     msg: "Force installation option is activated"
   when: weblogic_force_installation
@@ -13,6 +17,10 @@
     msg: "WebLogic jar path not defined !"
   when: weblogic_jar_path|trim == ''
 
+#
+# Middleware validation
+#
+
 - name: Check if oracle weblogic is already installed
   stat:
     path: "{{ oracle.middleware_dir }}"
@@ -25,3 +33,38 @@
 - set_fact:
     weblogic_already_installed: true
   when: oracle_home.stat.exists
+
+#
+# Domain validation
+#
+
+- name: Set the WebLogic domain and nodemanager homes
+  set_fact:
+    weblogic_domain_home: "{{ oracle.middleware_dir }}/user_projects/domains/{{ weblogic_domain_name }}"
+    weblogic_nodemanager_home: "{{ oracle.middleware_dir }}/user_projects/nodemanagers/{{ weblogic_domain_name }}"
+
+- name: Check if weblogic domain is already created
+  stat:
+    path: "{{ weblogic_domain_home }}"
+  register: domain_home
+
+- set_fact:
+    weblogic_domain_already_installed: true
+  when: domain_home.stat.exists
+
+#
+# Managed Server validation
+#
+
+- name: Set the Weblogic default Managed Server home
+  set_fact:
+    weblogic_managed_server_home: "{{ weblogic_domain_home }}/servers/{{ weblogic.managed_server_name }}"
+
+- name: Check if weblogic managed server is already created
+  stat:
+      path: "{{ weblogic_managed_server_home }}"
+  register: managed_server_home
+
+- set_fact:
+    weblogic_managed_server_already_installed: true
+  when: managed_server_home.stat.exists

@@ -2,6 +2,16 @@
 
 - hosts: localhost
   roles:
+    - role: abessifi.java
+      java_version: 8
+      java_jdk_type: 'oracle'
+      oracle_jdk_rpm_package: 'jdk-8u77-linux-x64.rpm'
+      oracle_jdk_rpm_url: 'http://download.oracle.com/otn-pub/java/jdk/8u77-b03/jdk-8u77-linux-x64.rpm'
+      java_set_as_default: true
+      tags:
+        - install-java
+
     - role: ansible-weblogic
-      weblogic_jar_path: '/srv/files/fmw_12.2.1.0.0_wls.jar'
+      weblogic_jar_path: '/srv/files/fmw_12.2.1.0.0_infrastructure.jar'
       weblogic_quick_installation: false
+      weblogic_installation_type: 'Fusion Middleware Infrastructure'

@@ -27,4 +27,7 @@ platforms:
 
 suites:
   - name: default
-
+    attributes:
+      tags:
+        - install-java
+        - install-with-managed-server

@@ -4,11 +4,6 @@
 # Create base domain (default domain)
 #
 
-- name: Set the Weblogic default domain and nodemanager homes
-  set_fact:
-    weblogic_domain_home: "{{ oracle.middleware_dir }}/user_projects/domains/{{ weblogic_domain_name }}"
-    weblogic_nodemanager_home: "{{ oracle.middleware_dir }}/user_projects/nodemanagers/{{ weblogic_domain_name }}"
-
 - name: Check if the basic_domain is already created
   stat:
     path: "{{ weblogic_domain_home }}"
