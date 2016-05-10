@@ -30,4 +30,4 @@ suites:
     attributes:
       tags:
         - install-java
-        - install-with-managed-server
+        - wls-install-with-managed-server
