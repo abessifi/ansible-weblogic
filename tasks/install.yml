@@ -28,6 +28,20 @@
     line: JVM_ARGS="-Dprod.props.file='${WL_HOME}'/.product.properties ${WLST_PROPERTIES} ${JVM_D64} ${UTILS_MEM_ARGS} ${COMMON_JVM_ARGS} ${CONFIG_JVM_ARGS} -Djava.security.egd=file:///dev/urandom"
   when: weblogic_version == '12c'
 
+- name: Create Ansible local facts directory
+  file:
+    path: /etc/ansible/facts.d
+    state: directory
+  become: yes
+  become_user: root
+
+- name: Add custom facts for WebLogic
+  template:
+    src: weblogic.fact.j2
+    dest: /etc/ansible/facts.d/weblogic.fact
+  become: yes
+  become_user: root
+
 # - name: Check if weblogic home is correctly created
 #   stat:
 #     path: "{{ weblogic.home_dir }}"

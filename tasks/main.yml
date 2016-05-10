@@ -37,3 +37,4 @@
   when: not weblogic_managed_server_already_installed
   tags:
     - install-with-managed-server
+

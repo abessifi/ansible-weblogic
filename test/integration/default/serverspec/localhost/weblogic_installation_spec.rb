@@ -73,3 +73,11 @@ describe "Check WebLogic installation" do
   end
 
 end
+
+describe "Check Ansible custom facts" do
+  describe file('/etc/ansible/facts.d/weblogic.fact') do
+    it { should contain "version=12c" }
+    it { should contain "release=12.2.1.0" }
+  end
+
+end
