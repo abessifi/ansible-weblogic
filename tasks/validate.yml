@@ -43,7 +43,7 @@
     weblogic_domain_home: "{{ oracle.middleware_dir }}/user_projects/domains/{{ weblogic_domain_name }}"
     weblogic_nodemanager_home: "{{ oracle.middleware_dir }}/user_projects/nodemanagers/{{ weblogic_domain_name }}"
 
-- name: Check if weblogic domain is already created
+- name: Check if weblogic domain home is already created
   stat:
     path: "{{ weblogic_domain_home }}"
   register: domain_home

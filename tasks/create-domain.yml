@@ -4,11 +4,6 @@
 # Create base domain (default domain)
 #
 
-- name: Check if the basic_domain is already created
-  stat:
-    path: "{{ weblogic_domain_home }}"
-  register: wls_domain_dir
-
 - name: Copy create-domain WLST script
   template:
     src: create-domain.py.j2
@@ -19,7 +14,6 @@
 
 - name: Execute create domain script
   shell: "{{ oracle.middleware_dir }}/oracle_common/common/bin/wlst.sh {{ weblogic.scripts_dir }}/create-domain.py > {{ weblogic.logs_dir }}/create_domain_{{ weblogic_domain_name }}_$(date +'%F').log 2>&1"
-  when: not wls_domain_dir.stat.exists
 
 #
 # Configure the Nodemanager and the AdminServer

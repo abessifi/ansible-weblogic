@@ -15,14 +15,8 @@
     - { src: 'create-managed-server.py.j2', dest: "{{ weblogic.scripts_dir }}/create-managed-server.py" }
     - { src: 'start-managed-server.py.j2', dest: "{{ weblogic.scripts_dir }}/start-managed-server.py" }
 
-- name: Check if the Managed Server is already created
-  stat:
-    path: "{{ weblogic_managed_server_home }}"
-  register: wls_managed_server_dir
-
 - name: Create a Managed Server
   shell: "{{ oracle.middleware_dir }}/oracle_common/common/bin/wlst.sh {{ weblogic.scripts_dir }}/create-managed-server.py > {{ weblogic.logs_dir }}/create_{{ weblogic.managed_server_name }}_{{ weblogic_domain_name }}_$(date +'%F').log 2>&1"
-  when: not wls_managed_server_dir.stat.exists
 
 - name: Create a security subdirectory for Managed Server
   file:

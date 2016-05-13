@@ -4,7 +4,7 @@
   tags:
     - wls-plain-install
     - wls-install-with-domain
-    - wls-with-managed-server
+    - wls-install-with-managed-server
 
 - include: prepare.yml
   become: yes
