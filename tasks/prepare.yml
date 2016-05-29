@@ -14,11 +14,11 @@
 - name: RedHat | Disabling SELinux
   selinux:
     state: disabled
-  when: ansible_os_family == 'RedHat'
+  when: (ansible_os_family == 'RedHat') and (ansible_virtualization_type != 'docker')
 
 - name: RedHat | Disable firewall deamon (firewalld)
   service: name=firewalld state=stopped enabled=no
-  when: ansible_os_family == 'RedHat'
+  when: (ansible_os_family == 'RedHat') and (ansible_virtualization_type != 'docker')
 
 - name: Change kernel parameters
   sysctl:
@@ -26,6 +26,7 @@
     value: "{{ item.value }}"
     state: present
   with_dict: kernel_params
+  when: ansible_virtualization_type != 'docker'
 
 - name: Create oracle.group
   group:
@@ -46,6 +47,7 @@
     line: "{{ oracle.user }} {{ item.key }} {{ item.value }}"
     create: yes
   with_items: sys_ulimits.nofile
+  when: ansible_virtualization_type != 'docker'
 
 - name: Add open process limits for oracle user
   lineinfile:
@@ -53,6 +55,7 @@
     line: "{{ oracle.user }} {{ item.key }} {{ item.value }}"
     create: yes
   with_items: sys_ulimits.nproc
+  when: ansible_virtualization_type != 'docker'
 
 # TODO: Check if limits need to be set when opening a shell session.
 # - name: Create a shell profile with file and process limits for oracle user
@@ -91,7 +94,7 @@
     owner: "{{ oracle.user }}"
     group: "{{ oracle.group }}"
 
-- name: Remove existing oracle home directory
+- name: Remove existing middleware home directory
   file:
     path: "{{ oracle.middleware_dir }}"
     state: absent
